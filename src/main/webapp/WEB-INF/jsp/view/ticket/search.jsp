@@ -1,0 +1,87 @@
+<%--@elvariable id="searchForm" type="com.jsun.site.TicketController.SearchForm"--%>
+<%--@elvariable id="searchPerformed" type="boolean"--%>
+<%--@elvariable id="results" type="org.springframework.data.domain.Page<com.jsun.site.repositories.SearchResult<com.jsun.site.Ticket>>"--%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="jsun" uri="http://www.jsun.com/jsp/tld/jsun" %>
+<%@ taglib prefix="template" tagdir="/WEB-INF/tags/template" %>
+<spring:message code="title.searchTickets" var="searchTitle" />
+<template:basic htmlTitle="${searchTitle}" bodyTitle="${searchTitle}">
+    <form:form method="get" modelAttribute="searchForm">
+        <form:input path="query" size="40" />
+        <input type="submit" value="<spring:message code="button.ticket.search" />" /><br />
+        <form:label path="useBooleanMode">
+            <form:checkbox path="useBooleanMode" />&nbsp;
+            <spring:message code="field.ticket.search.boolean" />
+        </form:label>
+    </form:form><br /><br />
+
+    <c:if test="${searchPerformed}">
+        <c:choose>
+            <c:when test="${results.numberOfElements == 0}">
+                <i><spring:message code="message.ticketSearch.none" /></i>
+            </c:when>
+            <c:otherwise>
+                <spring:message code="message.ticketSearch.page" />
+                &nbsp;::&nbsp;<c:forEach begin="1" end="${results.totalPages}" var="i">
+                <c:choose>
+                    <c:when test="${(i - 1) == results.number}">${i}</c:when>
+                    <c:otherwise><a href="<c:url value="/ticket/search">
+                            <c:param name="query" value="${searchForm.query}" />
+                            <c:param name="_useBooleanMode" value="on" />
+                            <c:if test="${searchForm.useBooleanMode}">
+                                <c:param name="useBooleanMode" value="true" />
+                            </c:if>
+                            <c:param name="paging.page" value="${i}" />
+                            <c:param name="paging.size" value="10" />
+                        </c:url>">${i}</a></c:otherwise>
+                </c:choose>&nbsp;
+                </c:forEach><br />
+                <c:forEach items="${results.content}" var="result">
+                    <spring:message code="message.ticketList.ticket" />&nbsp;${result.entity.id}:
+                    <a href="<c:url value="/ticket/view/${result.entity.id}" />">
+                        <c:out value="${jsun:abbreviateString(result.entity.subject, 60)}"/>
+                    </a><br />
+                    <spring:message code="message.ticketSearch.relevance" />: ${result.relevance}<br />
+                    <c:out value="${result.entity.customerName}" />&nbsp;
+                    <spring:message code="message.ticketList.created" />&nbsp;
+                    <jsun:formatDate value="${result.entity.dateCreated}" type="both"
+                                     timeStyle="short" dateStyle="medium" /><br />
+                    <br />
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
+    </c:if>
+</template:basic>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
